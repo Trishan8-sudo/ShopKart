@@ -9,6 +9,8 @@ import orderRoutes from './routes/order.route.js'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 
+
+const PORT = process.env.PORT || 8067
 const app = express()
 app.use(express.json())
 app.use(cookieParser()) // needed for parsing cookie into json objects
@@ -42,6 +44,6 @@ app.get('/', (req, res) => {
   res.send('Hello! Welcome to the Home Page...')
 })
 
-app.listen(8067, () => {
-  console.log('Server running on port 8067')
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
 })
