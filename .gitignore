@@ -16,8 +16,10 @@ node_modules
 dist
 dist-ssr
 
-# Environment files
-/server/.env
+# Environment files — never commit real secrets
+.env
+.env.*
+!.env.example
 *.local
 
 # Database
