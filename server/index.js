@@ -18,7 +18,7 @@ app.use(cookieParser()) // needed for parsing cookie into json objects
 // setting up cors middleware to accept request from client
 app.use(
   cors({
-    origin: 'http://localhost:5173', // base url of client
+    origin: 'https://shop-kart-orpin.vercel.app', // base url of client
     credentials: true,
   })
 )

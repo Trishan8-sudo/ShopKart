@@ -16,10 +16,8 @@ node_modules
 dist
 dist-ssr
 
-# Environment files — never commit real secrets
-.env
-.env.*
-!.env.example
+# Environment files
+/server/.env
 *.local
 
 # Database
@@ -34,4 +32,4 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+*.sw?
