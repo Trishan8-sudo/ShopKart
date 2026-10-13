@@ -4,7 +4,14 @@ import { CustomerModel } from '../models/customer.model.js'
 // custom middleware for cookie comparison with jwt_secret and login authorization
 const isAuthenticated = async (req, res, next) => {
   try {
-    let token = req.cookies ? req.cookies.token : null
+    // Read from Authorization header first (cross-origin safe), fall back to cookie
+  let token = null
+  const authHeader = req.headers['authorization']
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1]
+  } else {
+    token = req.cookies ? req.cookies.token : null
+  }
 
 
     if (!token) {

@@ -5,6 +5,8 @@ import validator from 'validator'
 
 const cookieOptions = {
   httpOnly: true,
+  secure: true,       // required for cross-origin (HTTPS only)
+  sameSite: 'none',   // required to send cookie cross-origin
 }
 
 // register controller i.e., controller to register a new user to the database
@@ -93,6 +95,7 @@ const loginCustomer = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Login successful',
+      token,
       customer: customerData,
       user: customerData,
       authenticatedUser: customerData,
@@ -114,7 +117,7 @@ const getMe = (req, res) => {
 }
 
 const logoutCustomer = (req, res) => {
-  res.clearCookie('token')
+  res.clearCookie('token', cookieOptions)
 
   res.status(200).json({
     success: true,

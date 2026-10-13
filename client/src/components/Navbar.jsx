@@ -45,8 +45,10 @@ function Navbar({ customer: propCustomer }) {
       setLoggingOut(true)
       await axiosInstance.post('/customers/logout')
       if (setUser) setUser(null)
+      localStorage.removeItem('shopkart_token')
     } catch (err) {
       console.error('Logout error:', err)
+      localStorage.removeItem('shopkart_token') // clear even if server fails
     } finally {
       setLoggingOut(false)
       navigate('/login')
