@@ -29,10 +29,6 @@ function Login() {
     try {
       const res = await axiosInstance.post('/customers/login', form)
       if (res.status === 200 && (res.data.success || res.data.user || res.data.customer)) {
-        // Store token in localStorage for cross-origin auth
-        if (res.data.token) {
-          localStorage.setItem('shopkart_token', res.data.token)
-        }
         if (setUser) {
           setUser(res.data.user || res.data.customer || res.data.authenticatedUser || res.data)
         }
