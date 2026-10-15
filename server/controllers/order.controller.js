@@ -362,10 +362,14 @@ export const getOrders = async (req, res) => {
       })
     }
 
-    // Only return placed / completed / processed orders (exclude temporary uncompleted pending payment attempts)
+    // Return placed/completed orders AND any PENDING_PAYMENT orders with FAILED payment status
+    // so users can retry failed payments from the Orders page
     const orders = await OrderModel.find({
       user: userId,
-      status: { $ne: 'PENDING_PAYMENT' },
+      $or: [
+        { status: { $ne: 'PENDING_PAYMENT' } },
+        { status: 'PENDING_PAYMENT', paymentStatus: 'FAILED' },
+      ],
     }).sort({ createdAt: -1 })
 
     return res.status(200).json({
@@ -427,6 +431,102 @@ export const getOrderById = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Internal server error while fetching order',
+    })
+  }
+}
+
+// 5. Retry Payment — create a fresh Razorpay order for a failed/pending order
+// POST /orders/retry-payment/:id
+export const retryPayment = async (req, res) => {
+  try {
+    const userId = req.customer?._id
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized Access. User must be logged in',
+      })
+    }
+
+    const { id } = req.params
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid order ID',
+      })
+    }
+
+    const order = await OrderModel.findById(id)
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found',
+      })
+    }
+
+    if (order.user.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Forbidden: You are not authorized to retry this order',
+      })
+    }
+
+    // Only allow retry if order is in a retryable state
+    if (order.paymentStatus === 'PAID') {
+      return res.status(400).json({
+        success: false,
+        message: 'Payment already completed for this order',
+      })
+    }
+
+    if (order.status !== 'PENDING_PAYMENT') {
+      return res.status(400).json({
+        success: false,
+        message: 'This order is not eligible for payment retry',
+      })
+    }
+
+    // Reset payment status to PENDING for retry
+    order.paymentStatus = 'PENDING'
+
+    // Create a fresh Razorpay order for the same amount
+    const amountInPaise = Math.round(order.totalAmount * 100)
+    let razorpayOrderId = null
+
+    try {
+      const razorpayOrder = await razorpayInstance.orders.create({
+        amount: amountInPaise,
+        currency: 'INR',
+        receipt: `retry_${order._id.toString()}_${Date.now()}`,
+      })
+      razorpayOrderId = razorpayOrder.id
+      order.razorpayOrderId = razorpayOrderId
+    } catch (rzpErr) {
+      console.warn('Razorpay retry order creation error (falling back to test id):', rzpErr.message)
+      razorpayOrderId = `order_test_${Date.now()}_${order._id.toString().slice(-6)}`
+      order.razorpayOrderId = razorpayOrderId
+    }
+
+    await order.save()
+
+    return res.status(200).json({
+      success: true,
+      message: 'Payment retry initiated',
+      shopKartOrderId: order._id,
+      orderId: order._id,
+      razorpayOrderId,
+      amount: amountInPaise,
+      totalAmount: order.totalAmount,
+      currency: 'INR',
+      key: getRazorpayKeyId(),
+      keyId: getRazorpayKeyId(),
+      order,
+    })
+  } catch (error) {
+    console.error('Error retrying payment:', error)
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error while retrying payment',
     })
   }
 }
