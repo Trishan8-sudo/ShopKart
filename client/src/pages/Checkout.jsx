@@ -227,7 +227,18 @@ function Checkout() {
         const rzp = new window.Razorpay(options)
         rzp.on('payment.failed', function (response) {
           console.error('Razorpay payment failed:', response.error)
-          setApiError(response.error?.description || 'Payment failed. Your cart has not been cleared. Please try again.')
+          // Mark order as FAILED in DB so it shows up in Orders page for retry
+          axiosInstance.post('/orders/verify-payment', {
+            shopKartOrderId: activeOrderId,
+            orderId: activeOrderId,
+            razorpay_order_id: razorpayOrderId,
+            razorpayOrderId,
+            razorpay_payment_id: response.error?.payment_id || '',
+            razorpayPaymentId: response.error?.payment_id || '',
+            razorpay_signature: 'payment_failed_mark',
+            razorpaySignature: 'payment_failed_mark',
+          }).catch(() => {})
+          setApiError(response.error?.description || 'Payment failed. Visit My Orders to retry your payment.')
           setSubmitting(false)
         })
         rzp.open()
@@ -284,8 +295,21 @@ function Checkout() {
           setApiError(verifyRes.data?.message || 'Payment verification failed.')
         }
       } else {
-        // Payment Failure Simulation (Step 15)
-        setApiError('Payment failed. Your cart has not been cleared. Please try again.')
+        // Payment Failure Simulation
+        // Mark order as FAILED in DB so it shows up in Orders page for retry
+        try {
+          await axiosInstance.post('/orders/verify-payment', {
+            shopKartOrderId: activeOrderId,
+            orderId: activeOrderId,
+            razorpay_order_id: razorpayOrderId,
+            razorpayOrderId,
+            razorpay_payment_id: '',
+            razorpayPaymentId: '',
+            razorpay_signature: 'payment_failed_mark',
+            razorpaySignature: 'payment_failed_mark',
+          })
+        } catch (_) {}
+        setApiError('Payment failed. Go to My Orders to complete your payment anytime.')
       }
     } catch (err) {
       console.error('Verification error:', err)
