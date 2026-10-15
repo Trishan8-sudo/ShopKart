@@ -79,41 +79,37 @@ function Navbar({ customer: propCustomer }) {
           <nav className="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm font-medium">
             <Link
               to="/home"
-              className={`transition-colors ${
-                isHomeActive
+              className={`transition-colors ${isHomeActive
                   ? 'text-indigo-400 font-semibold'
                   : 'text-slate-400 hover:text-slate-200'
-              }`}
+                }`}
             >
               Home
             </Link>
             <Link
               to="/products"
-              className={`transition-colors ${
-                isProductsActive
+              className={`transition-colors ${isProductsActive
                   ? 'text-indigo-400 font-semibold'
                   : 'text-slate-400 hover:text-slate-200'
-              }`}
+                }`}
             >
               Products
             </Link>
             <Link
               to="/orders"
-              className={`transition-colors ${
-                isOrdersActive
+              className={`transition-colors ${isOrdersActive
                   ? 'text-indigo-400 font-semibold'
                   : 'text-slate-400 hover:text-slate-200'
-              }`}
+                }`}
             >
               Orders
             </Link>
             <Link
               to="/wishlist"
-              className={`inline-flex items-center gap-1.5 transition-colors ${
-                isWishlistActive
+              className={`inline-flex items-center gap-1.5 transition-colors ${isWishlistActive
                   ? 'text-rose-400 font-semibold'
                   : 'text-slate-400 hover:text-slate-200'
-              }`}
+                }`}
             >
               <span>Wishlist</span>
               {wishlistCount > 0 && (
@@ -124,11 +120,10 @@ function Navbar({ customer: propCustomer }) {
             </Link>
             <Link
               to="/cart"
-              className={`inline-flex items-center gap-1.5 transition-colors ${
-                isCartActive
+              className={`inline-flex items-center gap-1.5 transition-colors ${isCartActive
                   ? 'text-indigo-400 font-semibold'
                   : 'text-slate-400 hover:text-slate-200'
-              }`}
+                }`}
             >
               <span>Cart</span>
               {totalCount > 0 && (

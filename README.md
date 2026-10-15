@@ -1,6 +1,24 @@
-﻿# ShopKart
+# ShopKart
 
 A full-stack e-commerce web application built with the **MERN stack** (MongoDB, Express, React, Node.js). ShopKart lets users browse products, manage a wishlist and cart, and place orders with integrated Razorpay payments.
+
+---
+
+## 🌐 Live Demo
+
+| Layer | URL |
+|----------|-----|
+| **Frontend** | [https://shop-kart-orpin.vercel.app/](https://shop-kart-orpin.vercel.app/) — hosted on **Vercel** |
+| **Backend** | [https://shopkart-4l3p.onrender.com/](https://shopkart-4l3p.onrender.com/) — hosted on **Render** |
+
+> [!IMPORTANT]
+> **Before opening the frontend, please activate the backend first.**
+>
+> The backend is hosted on Render's free tier, which **spins down after periods of inactivity**. Opening the backend link directly wakes the server up (this may take ~30–60 seconds on a cold start).
+>
+> **Steps:**
+> 1. Click the **backend link** → [https://shopkart-4l3p.onrender.com/](https://shopkart-4l3p.onrender.com/) and wait until the server responds.
+> 2. Then open the **frontend link** → [https://shop-kart-orpin.vercel.app/](https://shop-kart-orpin.vercel.app/)
 
 ---
 
